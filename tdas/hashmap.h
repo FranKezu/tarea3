@@ -9,7 +9,6 @@
 #ifndef HashMap_h
 #define HashMap_h
 
-
 typedef struct HashMap HashMap;
 
 typedef struct Pair {
@@ -30,5 +29,7 @@ Pair * firstMap(HashMap * table);
 Pair * nextMap(HashMap * table);
 
 void enlarge(HashMap * map);
+
+int is_equal(char *key1, char *key2);
 
 #endif /* HashMap_h */

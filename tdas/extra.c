@@ -1,6 +1,5 @@
 #include "extra.h"
 
-
 #define MAX_LINE_LENGTH 1024
 #define MAX_FIELDS 300
 
@@ -83,11 +82,11 @@ List *split_string(const char *str, const char *delim) {
 
 // Función para limpiar la pantalla
 void limpiarPantalla() {
-  #if defined(_WIN32) || defined(_WIN64)
-      system("cls");  // Windows (32 o 64 bits)
-  #else
-      system("clear");  // Linux / MacOS
-  #endif
+#ifdef _WIN32
+  system("cls");
+#else
+  system("clear");
+#endif
 }
 
 void presioneTeclaParaContinuar() {
