@@ -7,7 +7,7 @@
 #include <locale.h>
 #include <math.h>
 
-// ID,Nombre,Descripcion,Items,Arriba,Abajo,Izquierda,Derecha,EsFinal}
+// ID,Nombre,Descripcion,Items,Arriba,Abajo,Izquierda,Derecha,EsFinal
 
 typedef struct {
   char *nombre;
@@ -32,6 +32,10 @@ typedef struct {
   int tiempo_restante;
   Escenario *escenario_actual;
 } Jugador;
+
+void mostrar_menu(Jugador *jugador, HashMap *grafo);
+
+void empezar_juego();
 
 void *leer_escenarios() {
     FILE *archivo = fopen("graphquest.csv", "r");
@@ -90,21 +94,6 @@ void *leer_escenarios() {
 }
 
 //---------------------------------------------------------------------------------------------------------------------------
-int seleccionar_modo_juego() {
-    int modo;
-    printf("=== BIENVENIDO A GRAPHQUEST ===\n");
-    printf("Selecciona modo de juego:\n");
-    printf("1. Un jugador\n");
-    printf("2. Coperativo\n");
-    printf("Opción: ");
-    scanf("%d", &modo);
-
-    if (modo != 1 && modo != 2) {
-        printf("Opción inválida. Por favor intente de nuevo.\n");
-        scanf("%d", &modo);
-    }
-    return modo;
-}
 
 Jugador *crear_jugador(Escenario *escenario_inicial, char *usuario) {
   Jugador *jugador = (Jugador *)malloc(sizeof(Jugador));
@@ -127,7 +116,6 @@ Jugador *crear_jugador(Escenario *escenario_inicial, char *usuario) {
 
   return jugador;
 }
-
 
 void mostrar_estado(Jugador * jugador) {
   limpiarPantalla();
@@ -162,7 +150,6 @@ void mostrar_estado(Jugador * jugador) {
     }
   }
 
-  // Menú de opciones bonito
   puts("\n===============================");
   puts("      OPCIONES DEL JUGADOR     ");
   puts("===============================");
@@ -292,6 +279,58 @@ void mover_jugador(Jugador * jugador, HashMap * grafo) {
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 
+void iniciar_solo(Jugador *jugador, HashMap *grafo) {
+  printf(">> Iniciando juego para un jugador...\n");
+  grafo = leer_escenarios();
+  Pair *par = searchMap(grafo, "1"); // "0" es la clave como string
+  Escenario *inicio = (Escenario *)par->value;
+  jugador = crear_jugador(inicio, NULL);
+  mostrar_menu(jugador, grafo);
+}
+
+void iniciar_cooperativo(Jugador *jugador1, Jugador *jugador2, HashMap *grafo) {
+  printf(">> Iniciando juego para dos jugadores...\n");
+  grafo = leer_escenarios();
+  Pair *par = searchMap(grafo, "1"); // "0" es la clave como string
+  Escenario *inicio = (Escenario *)par->value;
+  jugador1 = crear_jugador(inicio, NULL);
+  jugador2 = crear_jugador(inicio, jugador1->usuario);
+  //mostrar_menu(jugador, grafo);
+}
+
+void empezar_juego() {
+  limpiarPantalla();
+  printf("Selecciona el modo de juego:\n");
+  printf("1. Un jugador\n");
+  printf("2. Cooperativo\n");
+  printf("3. Salir.");
+
+  HashMap *grafo = createMap(100);
+  Jugador *jugador1 = NULL;
+  Jugador *jugador2 = NULL;
+  
+  char opcion;
+  do {
+    printf("Ingrese su opción: ");
+    scanf(" %c", &opcion);
+
+    switch (opcion) {
+    case '1':
+      iniciar_solo(jugador1, grafo);
+      break;
+    case '2':
+      iniciar_cooperativo(jugador1, jugador2, grafo);
+      break;
+    case '3':
+      puts("Saliendo del programa...");
+      break;
+    default:
+      puts("Opción no válida. Por favor, intente de nuevo.");
+    }
+
+  } while (opcion != '3');
+}
+
 void mostrar_menu(Jugador *jugador, HashMap *grafo) {
   char opcion;
   do {
@@ -310,7 +349,7 @@ void mostrar_menu(Jugador *jugador, HashMap *grafo) {
       mover_jugador(jugador, grafo);
       break;
     case '4':
-      //reiniciar_partida()
+      empezar_juego();
       break;
     case '5':
       puts("Saliendo del juego...");
@@ -322,36 +361,12 @@ void mostrar_menu(Jugador *jugador, HashMap *grafo) {
   } while (opcion != '5');
 }
 
-void iniciar_solo(Jugador *jugador, HashMap *grafo) {
-  printf(">> Iniciando juego para un jugador...\n");
-  mostrar_menu(jugador, grafo);
-    // Aquí pondrás la lógica del juego con un solo jugador
-}
-
-void iniciar_cooperativo(Jugador *jugador1, Jugador *jugador2, HashMap *grafo) {
-  printf(">> Iniciando juego para dos jugadores...\n");
-    // Aquí irá la lógica del juego con turnos (la agregaremos en el siguiente paso)
-}
-
 int main() {
   setlocale(LC_ALL, "es_ES.UTF-8"); // Para que se puedan ver tildes, ñ, y carácteres especiales.
-  HashMap *grafo = createMap(100);
-  grafo = leer_escenarios(grafo);
 
-  int modo = seleccionar_modo_juego();
-  //---------------------------------------------------------------------------
-  Pair *par = searchMap(grafo, "1"); // "0" es la clave como string
-  
-  Escenario *inicio = (Escenario *)par->value;
-  
-  Jugador *jugador1 = crear_jugador(inicio, NULL);
-  Jugador *jugador2 = NULL;
-  
-  if (modo == 2) jugador2 = crear_jugador(inicio, jugador1->usuario);
-  
-  if (modo == 1) iniciar_solo(jugador1, grafo);
-
-  else iniciar_cooperativo(jugador1, jugador2, grafo);
+  printf("=== BIENVENIDO A GRAPHQUEST ===\n");
+  presioneTeclaParaContinuar();
+  empezar_juego();
 
   return 0;
 }
