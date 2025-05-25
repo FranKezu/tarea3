@@ -1,6 +1,7 @@
 @echo off
 chcp 65001
-gcc tarea3.c tdas\list.c tdas\extra.c tdas\hashmap.c -o tarea3
-tarea3.exe
+gcc main.c tdas\list.c tdas\extra.c tdas\hashmap.c grafo.c -o main -lwinmm
+
+main.exe
 
 pause
