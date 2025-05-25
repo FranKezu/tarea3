@@ -7,13 +7,23 @@
 #include <string.h>
 #include <locale.h>
 
+// Colores ANSI
+#define RESET         "\033[0m"
+#define RED           "\033[1;31m"
+#define GREEN         "\033[1;32m"
+#define YELLOW        "\033[1;33m"
+#define BLUE          "\033[1;34m"
+#define MAGENTA       "\033[1;35m"
+#define CYAN          "\033[1;36m"
+#define BOLD          "\033[1m"
+
 void mostrar_menu(Jugador *, HashMap *, int, int*);
 void empezar_juego();
 Jugador *crear_jugador(Escenario* , char*);
-void finalizar_partida(Jugador *, HashMap *);
-void mostrar_estado(Jugador *, HashMap *);
+void finalizar_partida(Jugador *, HashMap *, int );
+void mostrar_estado(Jugador *, HashMap *, int);
 
-
+//--------------------------------------------------------------CREAR JUGADOR(ES)--------------------------------------------------------------
 Jugador *crear_jugador(Escenario *escenario_inicial, char *usuario) {
   Jugador *jugador = (Jugador *)malloc(sizeof(Jugador));
   jugador->inventario = list_create();
@@ -22,12 +32,14 @@ Jugador *crear_jugador(Escenario *escenario_inicial, char *usuario) {
   jugador->tiempo_restante = 10; //REVISAR TIEMPO 
   jugador->escenario_actual = escenario_inicial;
 
+  jugador->termino = 0; //PARA MANEJAR EL COOP
+
   char name[200];
-  if(!usuario) printf("Ingrese el nombre de usuario: ");
-  else printf("Ingrese el nombre del segundo usuario: ");
+  if(!usuario) printf("👤 Ingrese el nombre de usuario: ");
+  else printf("👥 Ingrese el nombre del segundo usuario: ");
   scanf(" %[^\n]s", name);
   while(is_equal(name, usuario)){
-    printf("\nEl nombre ingresado es igual al otro jugador, por favor ingresa otro: ");
+    printf("\n⚠️ El nombre ingresado es igual al otro jugador, por favor ingresa otro: ");
     scanf(" %[^\n]s", name);
   }
 
@@ -35,16 +47,20 @@ Jugador *crear_jugador(Escenario *escenario_inicial, char *usuario) {
 
   return jugador;
 }
+//-------------------------------------------------------------------------------------------------------------------------------------------
 
-void finalizar_partida(Jugador *jugador, HashMap *grafo) {
-  if (jugador -> tiempo_restante <= 0) {
-    puts("El tiempo se ha agotado. ¡PERDISTE!");
-    puts("1. Empezar otra partida");
-    puts("2. Salir del juego");
+//--------------------------------------------------------------FINALIZAR SOLO--------------------------------------------------------------
+void finalizar_partida(Jugador *jugador, HashMap *grafo, int modo) {
+  if (jugador -> tiempo_restante <= 0 && modo == 1) {
+    puts(RED "\n═════════════════════════════════════");
+    puts("⏳ El tiempo se ha agotado. ¡PERDISTE!");
+    puts("═════════════════════════════════════" RESET);
+    puts("\n1. 🔁 Empezar otra partida");
+    puts("2. ❌ Salir del juego");
 
     char opcion;
     do {
-      printf("Ingrese su opción: ");
+      printf(YELLOW "\nIngrese su opción: " RESET);
       scanf(" %c", & opcion);
 
       switch (opcion) {
@@ -52,34 +68,47 @@ void finalizar_partida(Jugador *jugador, HashMap *grafo) {
         empezar_juego();
         break;
       case '2':
-        puts("Saliendo del juego...");
+        puts("🚪 Saliendo del juego...");
         exit(0);
         break;
       default:
-        puts("Opción no válida. Por favor, intente de nuevo.");
+        puts(RED "❌ Opción no válida. Por favor, intente de nuevo." RESET);
       }
     } while (opcion != '2');
     return;
   }
+  else if(jugador->tiempo_restante <= 0) jugador->termino = 1; //PARA DECIR QUE TERMINO POR TIEMPO
 
   Pair *par = searchMap(grafo, "16");
   Escenario *final = (Escenario * ) par -> value;
 
-  if(jugador->escenario_actual == final) {
-    printf("GANASTE");
+  if(jugador->escenario_actual == final && modo == 1) {
+    printf(GREEN "\n🎉 ¡GANASTE! 🎉\n" RESET);
+    printf("📦 Ítems Obtenidos:\n");
+    for (Item * item = list_first(jugador -> inventario); item != NULL; item = list_next(jugador -> inventario)) {
+      printf("  - %s ", item->nombre);
+    }
+    printf("\n\n💎 Puntaje Total Obtenido: %d\n\n", jugador->puntaje_total);
+    exit(0);
   }
+  else if(jugador->escenario_actual == final) jugador->termino = 1; // MODO COOP PARA GUARDAR QUE ESTE YA TERMINO
 
 }
+//-------------------------------------------------------------------------------------------------------------------------------------------
 
-void mostrar_estado(Jugador *jugador, HashMap *grafo) {
+
+//--------------------------------------------------------------ESTADO DURANTE PARTIDA--------------------------------------------------------------
+void mostrar_estado(Jugador *jugador, HashMap *grafo, int modo) {
   limpiarPantalla();
-  finalizar_partida(jugador, grafo);
+  finalizar_partida(jugador, grafo, modo);
+  if(modo == 2 && jugador->termino)return; // PARA QUE NO PUEDA JUGAR YA SI ES QUE TERMINO Y SIGA CON EL OTRO NOMAS
 
   // Mostrar estado del jugador y escenario
-
-  printf("\n📍 Estás en %s\n", jugador -> escenario_actual -> nombre);
+  printf(BLUE "\n╔════════════════════════════════════════════╗\n" RESET);
+  printf(BOLD "📍 Estás en: %s\n" RESET, jugador->escenario_actual->nombre);
   printf("📝 %s\n", jugador -> escenario_actual -> descripcion);
   printf("🎒 Peso: %d | 💎 Puntaje: %d | ⏳ Tiempo restante: %d\n", jugador -> peso_total, jugador -> puntaje_total, jugador -> tiempo_restante);
+  printf(BLUE "╚════════════════════════════════════════════╝\n" RESET);
 
   // Mostrar ítems del escenario
   if (list_size(jugador -> escenario_actual -> items) == 0) {
@@ -106,19 +135,20 @@ void mostrar_estado(Jugador *jugador, HashMap *grafo) {
     }
   }
 
-  puts("\n===============================");
-  puts("      OPCIONES DEL JUGADOR     ");
-  puts("===============================");
-  puts("1. Recoger Ítem(s)");
-  puts("2. Descartar Ítem(s)");
-  puts("3. Avanzar en una Dirección");
-  puts("4. Reiniciar Partida");
-  puts("5. Salir del Juego");
-  puts("===============================\n");
+  puts(BLUE "\n╔════════════════════════════════╗");
+  puts("║      OPCIONES DEL JUGADOR      ║");
+  puts("╚════════════════════════════════╝" RESET);
+  puts("1. 🎁 Recoger Ítem(s)");
+  puts("2. 🗑️  Descartar Ítem(s)");
+  puts("3. 🧭 Avanzar en una Dirección");
+  puts("4. 🔄 Reiniciar Partida");
+  puts("5. 🚪 Salir del Juego");
 }
+//-------------------------------------------------------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------INICIAR PARTIDAS SOLO Y COOP--------------------------------------------------------------
 void iniciar_solo(Jugador *jugador, HashMap *grafo) {
-  printf(">> Iniciando juego para un jugador...\n");
+  printf("\n" CYAN ">> Iniciando juego para un jugador...\n" RESET);
   grafo = leer_escenarios();
   Pair *par = searchMap(grafo, "1"); // "0" es la clave como string
   Escenario *inicio = (Escenario *)par->value;
@@ -127,8 +157,10 @@ void iniciar_solo(Jugador *jugador, HashMap *grafo) {
   mostrar_menu(jugador, grafo, 1, &contador);
 }
 
+//COOP
+
 void iniciar_cooperativo(Jugador *jugador1, Jugador *jugador2, HashMap *grafo) {
-  printf(">> Iniciando juego para dos jugadores...\n");
+  printf("\n" CYAN ">> Iniciando juego para dos jugadores...\n" RESET);
   grafo = leer_escenarios();
   Pair *par = searchMap(grafo, "1"); // "0" es la clave como string
   Escenario *inicio = (Escenario *)par->value;
@@ -136,19 +168,49 @@ void iniciar_cooperativo(Jugador *jugador1, Jugador *jugador2, HashMap *grafo) {
   jugador2 = crear_jugador(inicio, jugador1->usuario);
   while (1) {
     int contador = 2;
-    printf("\n=== Turno de %s ===", jugador1->usuario);
-    mostrar_menu(jugador1, grafo, 2, &contador);
-    contador = 2;
-    printf("\n=== Turno de %s ===", jugador2->usuario);
-    mostrar_menu(jugador2, grafo, 2, &contador);
-  }
-}
+    if(jugador1->termino == 0){
+      printf("\n" MAGENTA "=== Turno de %s ===\n" RESET, jugador1->usuario);
+      mostrar_menu(jugador1, grafo, 2, &contador);
+    }
 
+    contador = 2;
+    if(jugador2->termino == 0){
+      printf("\n" MAGENTA "=== Turno de %s ===\n" RESET, jugador2->usuario);
+      mostrar_menu(jugador2, grafo, 2, &contador);
+    }
+    if(jugador1->tiempo_restante <= 0 || jugador2->tiempo_restante <= 0){
+      limpiarPantalla();
+      printf("Uno de los jugadores se le ha acabado el tiempo y no ha alcanzado a salir, los dos pierden\n");
+      presioneTeclaParaContinuar();
+      empezar_juego();
+    }
+    if(jugador1->termino == 1 && jugador2->termino == 1) break;
+  }
+  limpiarPantalla();
+  printf("LOS DOS JUGADORES HAN CONSEGUIDO SALIR, HAN GANADO\n");
+  printf("📦 Ítems Obtenidos por %s:\n",jugador1->usuario);
+    for (Item * item = list_first(jugador1 -> inventario); item != NULL; item = list_next(jugador1 -> inventario)) {
+      printf("  - %s ", item->nombre);
+    }
+    printf("\n\n💎 Puntaje Total Obtenido: %d\n\n\n", jugador1->puntaje_total);
+
+  printf("📦 Ítems Obtenidos por %s:\n",jugador2->usuario);
+    for (Item * item = list_first(jugador2 -> inventario); item != NULL; item = list_next(jugador2 -> inventario)) {
+      printf("  - %s ", item->nombre);
+    }
+    printf("\n\n💎 Puntaje Total Obtenido: %d\n\n", jugador2->puntaje_total);  
+  presioneTeclaParaContinuar();
+  empezar_juego();
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------MENU PRINCIPAL--------------------------------------------------------------
 void empezar_juego() {
-  printf("Selecciona el modo de juego:\n");
-  printf("1. Un jugador\n");
-  printf("2. Cooperativo\n");
-  printf("3. Salir.\n");
+  limpiarPantalla();
+  printf(BOLD "\nSeleccione el modo de juego:\n" RESET);
+  printf("1. 🎮 Un jugador\n");
+  printf("2. 🤝 Cooperativo\n");
+  printf("3. 🚪 Salir\n");
 
   HashMap *grafo = createMap(100);
   Jugador *jugador1 = NULL;
@@ -156,7 +218,7 @@ void empezar_juego() {
   
   char opcion;
   do {
-    printf("Ingrese su opción: ");
+    printf(YELLOW "Ingrese su opción: " RESET);
     scanf(" %c", &opcion);
 
     switch (opcion) {
@@ -167,54 +229,66 @@ void empezar_juego() {
       iniciar_cooperativo(jugador1, jugador2, grafo);
       break;
     case '3':
-      puts("Saliendo del programa...");
+      puts("👋 Saliendo del programa...");
+      exit(0);
       break;
     default:
-      puts("Opción no válida. Por favor, intente de nuevo.");
+      puts(RED "❌ Opción no válida. Por favor, intente de nuevo." RESET);
     }
 
   } while (opcion != '3');
 }
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------MENU DE JUEGO (ACCIONES DURANTE PARTIDA)---------------------------------------------------
 void mostrar_menu(Jugador *jugador, HashMap *grafo, int modo, int *contador) {
   char opcion;
   do {
-    mostrar_estado(jugador, grafo);
+    mostrar_estado(jugador, grafo, modo);
+    if (modo == 2 && jugador->termino){ 
+      printf("%s ha llegado al final. Marcado como terminado.\n", jugador->usuario);
+      presioneTeclaParaContinuar();
+      return; // PARA SALIR DE ESTE MENU TAMBIEN
+    }  
     if(modo == 2){
-      printf("Jugador actual: %s\n", jugador->usuario);
-      printf("Acciones restantes: %d\n\n", *contador);
+      printf(BOLD "\nJugador actual: %s\n" RESET, jugador->usuario);
+      printf("🧮 Acciones restantes: %d\n\n", *contador);
     }
-    printf("Ingrese su opción: ");
+    printf(YELLOW "Ingrese su opción: " RESET);
     scanf(" %c", &opcion);
 
     switch (opcion) {
     case '1':
-      recoger_item(jugador);
+      if (recoger_item(jugador)) (*contador)--;
       break;
     case '2':
-      descartar_item(jugador);
+      if (descartar_item(jugador)) (*contador)--;
       break;
     case '3':
-      mover_jugador(jugador, grafo);
+      if (mover_jugador(jugador, grafo)) (*contador)--;
       break;
     case '4':
       empezar_juego();
       break;
     case '5':
-      puts("Saliendo del juego...");
+      puts("👋 Saliendo del juego...");
+      exit(0);
       break;
     default:
-      puts("Opción no válida. Por favor, intente de nuevo.");
+      puts(RED "❌ Opción no válida. Por favor, intente de nuevo." RESET);
     }
-    (*contador)--;
     if(*contador == 0) break;
   } while (opcion != '5');
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 int main() {
   setlocale(LC_ALL, "es_ES.UTF-8"); // Para que se puedan ver tildes, ñ, y carácteres especiales.
-
-  printf("=== BIENVENIDO A GRAPHQUEST ===\n");
+  
+  printf(BOLD GREEN "\n═══════════════════════════════════════\n" RESET);
+  printf(BOLD "       BIENVENIDO A GRAPHQUEST       \n" RESET);
+  printf(GREEN "═══════════════════════════════════════\n" RESET);
   empezar_juego();
 
   return 0;

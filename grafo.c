@@ -63,12 +63,12 @@ void * leer_escenarios() {
   fclose(archivo);
   return grafo;
 }
-
-void recoger_item(Jugador *jugador) {
+//--------------------------------------------------------------OPCION 1 (RECOGER ITEM)--------------------------------------------------------------
+int recoger_item(Jugador *jugador) {
   if (list_size(jugador->escenario_actual->items) == 0) {
     puts("No hay ítems disponibles para recoger.\n");
     presioneTeclaParaContinuar();
-    return;
+    return 0;
   }
 
   printf("Nombre del ítem que quieres recoger: ");
@@ -85,20 +85,21 @@ void recoger_item(Jugador *jugador) {
       list_popCurrent(jugador->escenario_actual->items); // Eliminar del escenario
       printf("Has recogido el ítem: %s\n", item->nombre);
       jugador->tiempo_restante -= 1; //TIEMPO DESCONTADO POR AGARRAR ITEM
-      return;
+      return 1;
     }
   }
 
   printf("No se encontró el ítem con ese nombre.\n");
+  return 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------OPCION 2 (DESCARTAR ITEM)--------------------------------------------------------------
-void descartar_item(Jugador *jugador) {
+int descartar_item(Jugador *jugador) {
   if (list_size(jugador -> inventario) == 0) {
     puts("Tu inventario está vacío. No hay nada que descartar.\n");
     presioneTeclaParaContinuar();
-    return;
+    return 0;
   }
 
   printf("\n🎒 Inventario actual:\n");
@@ -121,16 +122,17 @@ void descartar_item(Jugador *jugador) {
       jugador -> tiempo_restante -= 1;
 
       printf("Has descartado el ítem '%s'. Ahora está disponible en %s.\n", item -> nombre, jugador -> escenario_actual -> nombre);
-      return;
+      return 1;
     }
   }
 
   printf("No tienes ningún ítem con ese nombre.\n");
+  return 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------OPCION 3 (MOVER JUGADOR)--------------------------------------------------------------
-void mover_jugador(Jugador * jugador, HashMap * grafo) {
+int mover_jugador(Jugador * jugador, HashMap * grafo) {
   
   const char * direcciones[] = {"Arriba (w)", "Abajo (s)", "Izquierda (a)", "Derecha (d)"};
   char direccion_char[] = {'w','s','a','d'};
@@ -163,14 +165,14 @@ void mover_jugador(Jugador * jugador, HashMap * grafo) {
     printf("Opción inválida.\n");
     presioneTeclaParaContinuar();
 
-    return;
+    return 0;
   }
 
   int id_conexion = jugador -> escenario_actual -> conexiones[indice];
   if (id_conexion == -1) {
     puts("No puedes ir a esta dirección.\n");
     presioneTeclaParaContinuar();
-    return;
+    return 0;
   }
 
   char id_str[10];
@@ -179,7 +181,9 @@ void mover_jugador(Jugador * jugador, HashMap * grafo) {
 
   jugador -> escenario_actual = (Escenario * ) par -> value;
   jugador -> tiempo_restante -= (jugador -> peso_total + 1) / 10;
-  printf("Te has movido a %s\n", jugador -> escenario_actual -> nombre);
-  PlaySound(TEXT("audio/pasos.wav"), NULL, SND_FILENAME | SND_ASYNC);
+  printf("🚶‍♂️ Te has movido a %s\n", jugador -> escenario_actual -> nombre);
+  PlaySound(TEXT("audios/pasos.wav"), NULL, SND_FILENAME | SND_ASYNC);
   presioneTeclaParaContinuar();
+  PlaySound(NULL, 0, 0);
+  return 1;
 }

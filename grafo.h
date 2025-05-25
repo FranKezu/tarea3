@@ -29,14 +29,15 @@ typedef struct {
   int peso_total;
   int puntaje_total;
   int tiempo_restante;
+  int termino;
   Escenario *escenario_actual;
 } Jugador;
 
 char **leer_linea_csv(FILE *archivo, char separador);
 List *split_string(const char *str, const char *delimitador);
 void *leer_escenarios();
-void recoger_item(Jugador *jugador);
-void descartar_item(Jugador *jugador);
-void mover_jugador(Jugador *jugador, HashMap *grafo);
+int recoger_item(Jugador *jugador);
+int descartar_item(Jugador *jugador);
+int mover_jugador(Jugador *jugador, HashMap *grafo);
 
 #endif
