@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <windows.h>
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
@@ -180,7 +181,7 @@ int mover_jugador(Jugador * jugador, HashMap * grafo) {
   Pair * par = searchMap(grafo, id_str);
 
   jugador -> escenario_actual = (Escenario * ) par -> value;
-  jugador -> tiempo_restante -= (jugador -> peso_total + 1) / 10;
+  jugador -> tiempo_restante -= (int)ceil((double)(jugador -> peso_total + 1) / 10);
   printf("🚶‍♂️ Te has movido a %s\n", jugador -> escenario_actual -> nombre);
   PlaySound(TEXT("audios/pasos.wav"), NULL, SND_FILENAME | SND_ASYNC);
   presioneTeclaParaContinuar();

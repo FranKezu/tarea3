@@ -29,7 +29,7 @@ Jugador *crear_jugador(Escenario *escenario_inicial, char *usuario) {
   jugador->inventario = list_create();
   jugador->peso_total = 0;
   jugador->puntaje_total = 0;
-  jugador->tiempo_restante = 10; //REVISAR TIEMPO 
+  jugador->tiempo_restante = 30; //REVISAR TIEMPO CAMBIE YA QUE LO HICE CON CEIL COMO LO DIJO EL PROFE, MODIFICALO A TU GUSTO TOY CHATO WUATON 3:22AM LA CAGA DE COOP MA ENREDA Q LA CHUCHA
   jugador->escenario_actual = escenario_inicial;
 
   jugador->termino = 0; //PARA MANEJAR EL COOP
