@@ -67,14 +67,15 @@ void * leer_escenarios() {
 //--------------------------------------------------------------OPCION 1 (RECOGER ITEM)--------------------------------------------------------------
 int recoger_item(Jugador *jugador) {
   if (list_size(jugador->escenario_actual->items) == 0) {
-    puts("No hay ítems disponibles para recoger.\n");
+    puts("\nNo hay ítems disponibles para recoger.\n");
     presioneTeclaParaContinuar();
     return 0;
   }
 
-  printf("Nombre del ítem que quieres recoger: ");
+  printf("\nNombre del ítem que quieres recoger: ");
   char nombre_item[100];
   scanf(" %[^\n]s", nombre_item);
+  printf("\n");
 
   for (Item *item = list_first(jugador->escenario_actual->items); item != NULL; item = list_next(jugador->escenario_actual->items)) {
     if (is_equal(item->nombre, nombre_item)) {
@@ -86,11 +87,13 @@ int recoger_item(Jugador *jugador) {
       list_popCurrent(jugador->escenario_actual->items); // Eliminar del escenario
       printf("Has recogido el ítem: %s\n", item->nombre);
       jugador->tiempo_restante -= 1; //TIEMPO DESCONTADO POR AGARRAR ITEM
+      presioneTeclaParaContinuar();
       return 1;
     }
   }
 
   printf("No se encontró el ítem con ese nombre.\n");
+  presioneTeclaParaContinuar();
   return 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -98,7 +101,7 @@ int recoger_item(Jugador *jugador) {
 //--------------------------------------------------------------OPCION 2 (DESCARTAR ITEM)--------------------------------------------------------------
 int descartar_item(Jugador *jugador) {
   if (list_size(jugador -> inventario) == 0) {
-    puts("Tu inventario está vacío. No hay nada que descartar.\n");
+    puts("\nTu inventario está vacío. No hay nada que descartar.\n");
     presioneTeclaParaContinuar();
     return 0;
   }
@@ -111,6 +114,7 @@ int descartar_item(Jugador *jugador) {
   printf("\nIngrese el nombre del ítem que desea descartar: ");
   char nombre_item[100];
   scanf(" %[^\n]s", nombre_item);
+  printf("\n");
 
   for (Item * item = list_first(jugador -> inventario); item != NULL; item = list_next(jugador -> inventario)) {
     if (is_equal(item -> nombre, nombre_item)) {
@@ -122,12 +126,14 @@ int descartar_item(Jugador *jugador) {
 
       jugador -> tiempo_restante -= 1;
 
-      printf("Has descartado el ítem '%s'. Ahora está disponible en %s.\n", item -> nombre, jugador -> escenario_actual -> nombre);
+      printf("Has descartado el ítem '%s'. Ahora está disponible en %s.\n", item ->nombre, jugador->escenario_actual->nombre);
+      presioneTeclaParaContinuar();
       return 1;
     }
   }
 
   printf("No tienes ningún ítem con ese nombre.\n");
+  presioneTeclaParaContinuar();
   return 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -156,6 +162,7 @@ int mover_jugador(Jugador * jugador, HashMap * grafo) {
   char direccion;
   printf("Ingrese su opción: ");
   scanf(" %c", & direccion);
+  printf("\n");
 
   int indice = -1;
   if (direccion == 'w') indice = 0;

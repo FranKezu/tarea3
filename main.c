@@ -229,13 +229,13 @@ void empezar_juego() {
       iniciar_cooperativo(jugador1, jugador2, grafo);
       break;
     case '3':
-      puts("👋 Saliendo del programa...");
+      puts("👋 Saliendo del juego...");
       exit(0);
       break;
     default:
       puts(RED "❌ Opción no válida. Por favor, intente de nuevo." RESET);
     }
-
+    
   } while (opcion != '3');
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -245,6 +245,7 @@ void mostrar_menu(Jugador *jugador, HashMap *grafo, int modo, int *contador) {
   char opcion;
   do {
     mostrar_estado(jugador, grafo, modo);
+
     if (modo == 2 && jugador->termino){ 
       printf("%s ha llegado al final. Marcado como terminado.\n", jugador->usuario);
       presioneTeclaParaContinuar();
@@ -254,6 +255,7 @@ void mostrar_menu(Jugador *jugador, HashMap *grafo, int modo, int *contador) {
       printf(BOLD "\nJugador actual: %s\n" RESET, jugador->usuario);
       printf("🧮 Acciones restantes: %d\n\n", *contador);
     }
+
     printf(YELLOW "Ingrese su opción: " RESET);
     scanf(" %c", &opcion);
 
@@ -278,6 +280,7 @@ void mostrar_menu(Jugador *jugador, HashMap *grafo, int modo, int *contador) {
       puts(RED "❌ Opción no válida. Por favor, intente de nuevo." RESET);
     }
     if(*contador == 0) break;
+
   } while (opcion != '5');
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -288,7 +291,8 @@ int main() {
   
   printf(BOLD GREEN "\n═══════════════════════════════════════\n" RESET);
   printf(BOLD "       BIENVENIDO A GRAPHQUEST       \n" RESET);
-  printf(GREEN "═══════════════════════════════════════\n" RESET);
+  printf(GREEN "═══════════════════════════════════════\n\n" RESET);
+  presioneTeclaParaContinuar();
   empezar_juego();
 
   return 0;
