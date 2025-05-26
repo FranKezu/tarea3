@@ -52,8 +52,6 @@ Este programa implementa un juego de aventura por texto llamado GraphQuest, en e
 
 ---
 
----
-
 ### 📂 Archivos requeridos (Incluídos en el repositorio)
 
 - `grafo.c` y `grafo.h`: contiene funciones importantes del movimiento entre gráfos.
