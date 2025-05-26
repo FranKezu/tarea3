@@ -1,4 +1,5 @@
 #include "extra.h"
+#include <conio.h>
 
 #define MAX_LINE_LENGTH 1024
 #define MAX_FIELDS 300
@@ -90,7 +91,8 @@ void limpiarPantalla() {
 }
 
 void presioneTeclaParaContinuar() {
-  puts("Presione una tecla para continuar...");
-  getchar(); // Consume el '\n' del buffer de entrada
-  getchar(); // Espera a que el usuario presione una tecla
+    // fflush(stdin) funciona en MSVC para limpiar el buffer de stdin
+    fflush(stdin);
+    printf("Presione una tecla para continuar...");
+    getch();        // lee sin necesidad de pulsar Enter
 }

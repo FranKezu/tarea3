@@ -5,9 +5,6 @@
 #include "tdas/hashmap.h"
 #include <stdio.h>
 
-
-// ID,Nombre,Descripcion,Items,Arriba,Abajo,Izquierda,Derecha,EsFinal
-
 typedef struct {
   char *nombre;
   int valor;
