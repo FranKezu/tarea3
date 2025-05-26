@@ -7,6 +7,8 @@
 #include <string.h>
 #include <locale.h>
 
+//gcc main.c tdas\list.c tdas\extra.c tdas\hashmap.c grafo.c -o main -lwinmm
+
 // Colores ANSI
 #define RESET         "\033[0m"
 #define RED           "\033[1;31m"

@@ -8,9 +8,9 @@
 
 ## 🚀 ¿Cómo ejecutar el programa?
 
-### 🟢 Opción 1: Ejecutar el archivo 
+### 🟢 Opción 1: Ejecutar el archivo
 
-Puedes ejecutar el programa directamente haciendo doble clic en el archivo `main` que se encuentra en la carpeta del proyecto.
+Puedes ejecutar el programa directamente haciendo doble clic en el archivo `run` que se encuentra en la carpeta del proyecto.
 Esto abrirá automáticamente una consola con el programa corriendo.
 
 ---
@@ -36,7 +36,6 @@ En caso de ver carácteres raros, es porque no se están mostrando los tildes co
 $OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
 ```
 
-
 ---
 
 ### 📋 ¿Qué hace el programa?
@@ -53,28 +52,39 @@ Este programa implementa un juego de aventura por texto llamado GraphQuest, en e
 
 ---
 
-### 📋 Funciones del programa:
-- Tenemos diversas funciones qe se encargan de que el juego funcione correctamente, por lo que si una de estas falla, el juego se corrompe, por lo que nos aseguramos de que todas las funciones cumplan con su tarea y así darle la mejor experiencia al jugador o los jugadores dependiendo de la opción de juego que desean.
+---
+
+### 📂 Archivos requeridos (Incluídos en el repositorio)
+
+- `grafo.c` y `grafo.h`: contiene funciones importantes del movimiento entre gráfos.
+- `main.c`: contiene el menú del programa con sus respectivas funciones.
+- `data/graphquest.csv`: base de datos que contiene el juego.
+- `tdas/list.c` y `tdas/list.h`:
+- `tdas/extra.c` y `tdas/extra.h`
+- `tdas/hashmap.c` y `tdas/hashmap.h`
 
 ### 🚀 Ejemplo simple de uso
 
 **Iniciar el programa**:
-   ```bash
+
+```bash
    Seleccione el modo de juego:
    1. 🎮 Un jugador
    2. 🤝 Cooperativo
    3. 🚪 Salir
 ```
+
 1. **Seleccionamos un modo (ej: Un Jugador (1) )**:
    - Selecciona la opción `1`.
-  ```
+
+```
    >> Iniciando GRAPHQUEST para un jugador...
 👤 Ingrese el nombre de usuario: Ariel
-  ```
+```
 
+- Se muestra el menú.
 
-   - Se muestra el menú.
-  ```
+```
    ════════════════════════════════════════════════════════════════════════════════════════
    📍 Estás en: Entrada principal
    📝 Una puerta rechinante abre paso a esta mansion olvidada por los dioses y los conserjes. El aire huele a humedad y a misterios sin resolver.
@@ -93,18 +103,20 @@ Este programa implementa un juego de aventura por texto llamado GraphQuest, en e
    4.🔄 Reiniciar Partida,
    5.🚪 Salir del Juego,
    Ingrese su opción: 3
-  ```
+```
 
-   - Selecciona la opción `3`(Avanzar).
-  ```
+- Selecciona la opción `3`(Avanzar).
+
+```
    📍 Posibles direcciones desde Entrada principal:
   
    Abajo (s): Cocina,
    Ingrese su opción: s (Tu jugador se movera en esa dirección).
-  ```
-   - Así el jugador se va desplazando en las distintas habitaciones y recogiendo como descartando items a su gusto, hasta que se acabe el tiempo o el jugador consiga salir (habitacion llamada "Salida").
+```
 
-  ```
+- Así el jugador se va desplazando en las distintas habitaciones y recogiendo como descartando items a su gusto, hasta que se acabe el tiempo o el jugador consiga salir (habitacion llamada "Salida").
+
+```
    🎉 ¡GANASTE! 🎉
 
    📦 Ítems Obtenidos: (Se muestran los items recogidos por el jugador).
@@ -112,7 +124,8 @@ Este programa implementa un juego de aventura por texto llamado GraphQuest, en e
    💎 Puntaje Total Obtenido: (Puntaje total).
 
    "FIN PROGRAMA".
-   ```
+```
+
 ---
 
 ### 🔨 Comentario como grupo
@@ -120,3 +133,9 @@ Este programa implementa un juego de aventura por texto llamado GraphQuest, en e
 - Como dupla nos fue muy fácil trabajar, programamos siempre juntos, ya sea presencialmente o por discord, por lo que el trabajo fue equitativamente bien distribuido. No tuvimos ningún tipo de inconveniente al realizar la tarea.
 
 ---
+
+### 🐞 Posibles problemas encontrados
+
+- **Soporte**: solo Windows, usuarios de MacOS podrían tener dificultades ejecutando el programa.
+- **Entrada inválida**: si se ingresan caracteres cuando se solicita un número, el programa puede trabarse.
+- **Funciones**: estas se encargan de que el juego funcione correctamente, por lo que si una de estas falla, el juego se corrompe, por lo que nos aseguramos de que todas las funciones cumplan con su tarea y así darle la mejor experiencia al jugador o los jugadores dependiendo de la opción de juego que desean.
